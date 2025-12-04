@@ -56,13 +56,17 @@ body {
 }
 
 .panel.collapsed {
-  padding-block: 0.55rem;
+  padding-block: 0.35rem;
   padding-inline: 1rem;
-  min-height: auto;
+  min-height: 0;
+  height: auto;
 }
 
 .panel.collapsed .panel-body {
+  display: none;
   margin-top: 0;
+  padding: 0;
+  min-height: 0;
 }
 
 .buy-panel {
