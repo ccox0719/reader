@@ -1,4 +1,4 @@
-import difficultyModes from "../content/difficultyModes.json";
+import difficultyModes from "../content/difficultyModes.json" assert { type: "json" };
 
 export type DifficultyModifiers = {
   startingCashMultiplier: number;
