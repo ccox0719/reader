@@ -1,28 +1,11 @@
-import artifactDefinitions from "../content/artifacts.json";
+import {
+  artifactDefinitions,
+  ArtifactDefinition,
+  ArtifactEffectDescriptor,
+  Rarity,
+} from "../content/artifacts.js";
 
-export type Rarity = "common" | "rare" | "epic" | "legendary";
-
-export interface ArtifactEffectDescriptor {
-  energyBonus?: number;
-  eventChanceBonus?: number;
-  negativeEventMultiplier?: number;
-  eraDurationReduction?: number;
-  startingCashBonus?: number;
-  revealVolatility?: boolean;
-  volatilityMultiplier?: number;
-  marginLimitBonus?: number;
-  triggerSlotBonus?: number;
-  predictionBonus?: number;
-}
-
-export interface ArtifactDefinition {
-  id: string;
-  name: string;
-  description: string;
-  rarity: Rarity;
-  tags: string[];
-  effects: ArtifactEffectDescriptor;
-}
+export type { ArtifactDefinition, ArtifactEffectDescriptor, Rarity };
 
 export interface Artifact extends ArtifactDefinition {
   unlocked: boolean;

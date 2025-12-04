@@ -8,7 +8,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc && node scripts/copyStatic.js",
     "export-pages": "npm run build",
-    "deploy": "npm run export-pages && git add dist && git add -u dist && git status -sb"
+    "deploy": "npm run export-pages && git add dist && git add -u dist && git status -sb",
+    "deploy:auto": "pwsh ./scripts/deploy-gh-pages.ps1"
   },
   "keywords": [],
   "author": "",
