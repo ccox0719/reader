@@ -1,4 +1,4 @@
-import artifactDefinitions from "../content/artifacts.json";
+import { artifactDefinitions, } from "../content/artifacts.js";
 export const artifactLibrary = artifactDefinitions;
 export const generateArtifactPool = () => artifactLibrary.map((entry) => ({
     ...entry,
