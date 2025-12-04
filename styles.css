@@ -827,6 +827,30 @@ button:hover {
   padding: 0.45rem 0.5rem;
 }
 
+.trade-form select,
+.watch-modal-body select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  color-scheme: dark;
+  padding-right: 2rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M0 0h10L5 6z' fill='%23f7fbff'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: calc(100% - 0.8rem) 50%;
+  background-size: 0.65rem auto;
+}
+
+.trade-form select option,
+.watch-modal-body select option {
+  background: var(--bg-card-dark);
+  color: #f7fbff;
+}
+
+.trade-form select::-ms-expand,
+.watch-modal-body select::-ms-expand {
+  display: none;
+}
+
 .trade-buttons {
   display: flex;
   gap: 0.5rem;
