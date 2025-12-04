@@ -1,16 +1,13 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.calculateEventShock = exports.runDailyEvents = void 0;
-const eventGen_js_1 = require("../generators/eventGen.js");
+import { generateEvent } from "../generators/eventGen.js";
 const clampChance = (value) => Math.min(1, Math.max(0, value));
-const runDailyEvents = (state, rng, eventChance, weightOverrides) => {
+export const runDailyEvents = (state, rng, eventChance, weightOverrides) => {
     state.eventsToday = [];
     state.pendingChoice = null;
     const chance = clampChance(eventChance);
     if (rng.next() >= chance) {
         return [];
     }
-    const event = (0, eventGen_js_1.generateEvent)(rng, state.sectors, weightOverrides);
+    const event = generateEvent(rng, state.sectors, weightOverrides);
     if (event.type === "player_choice") {
         event.choiceAccepted = false;
         state.pendingChoice = event;
@@ -18,8 +15,7 @@ const runDailyEvents = (state, rng, eventChance, weightOverrides) => {
     state.eventsToday.push(event);
     return [event];
 };
-exports.runDailyEvents = runDailyEvents;
-const calculateEventShock = (company, events, options) => {
+export const calculateEventShock = (company, events, options) => {
     if (events.length === 0)
         return 0;
     const negativeMultiplier = options?.negativeImpactMultiplier ?? 1;
@@ -33,4 +29,3 @@ const calculateEventShock = (company, events, options) => {
         return total + impact * multiplier * affinity;
     }, 0);
 };
-exports.calculateEventShock = calculateEventShock;

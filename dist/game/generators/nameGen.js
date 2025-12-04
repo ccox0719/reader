@@ -1,10 +1,4 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateTicker = exports.generateName = void 0;
-const adjectives_json_1 = __importDefault(require("../content/adjectives.json"));
+import adjectives from "../content/adjectives.json";
 const DEFAULT_NOUNS = [
     "Holdings",
     "Networks",
@@ -25,7 +19,7 @@ const pickRandom = (list, rng) => list[Math.floor(rng.next() * list.length)];
   */
 const getAdjectivePool = (branding) => [
     ...(branding?.adjectives ?? []),
-    ...adjectives_json_1.default,
+    ...adjectives,
 ];
 /**
   * Build the noun pool by combining sector branding and the default nouns.
@@ -38,18 +32,17 @@ const getNounPool = (branding) => [
   * Generates a company name in the format:
   *   "<Adjective> <Noun> <Number>[-Sector]"
   */
-const generateName = (rng, branding, sectorLabel) => {
+export const generateName = (rng, branding, sectorLabel) => {
     const adjective = pickRandom(getAdjectivePool(branding), rng);
     const noun = pickRandom(getNounPool(branding), rng);
     const suffix = Math.floor(rng.next() * 999);
     const sectorHint = sectorLabel ? `-${sectorLabel}` : "";
     return `${adjective} ${noun} ${suffix}${sectorHint}`;
 };
-exports.generateName = generateName;
 /**
   * Generates a simple 3–4 letter ticker symbol using uppercase letters.
   */
-const generateTicker = (rng) => {
+export const generateTicker = (rng) => {
     const len = 3 + Math.floor(rng.next() * 2);
     let ticker = "";
     for (let i = 0; i < len; i += 1) {
@@ -58,4 +51,3 @@ const generateTicker = (rng) => {
     }
     return ticker;
 };
-exports.generateTicker = generateTicker;

@@ -1,10 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.changeDifficulty = exports.progressArtifact = exports.progressXp = void 0;
-const metaState_js_1 = require("../core/metaState.js");
-const progressXp = (meta, amount) => (0, metaState_js_1.awardXp)(meta, amount);
-exports.progressXp = progressXp;
-const progressArtifact = (meta, artifactId) => (0, metaState_js_1.unlockArtifact)(meta, artifactId);
-exports.progressArtifact = progressArtifact;
-const changeDifficulty = (meta, difficultyId) => (0, metaState_js_1.setDifficulty)(meta, difficultyId);
-exports.changeDifficulty = changeDifficulty;
+import { awardXp, unlockArtifact as unlockMetaArtifact, setDifficulty, } from "../core/metaState.js";
+export const progressXp = (meta, amount) => awardXp(meta, amount);
+export const progressArtifact = (meta, artifactId) => unlockMetaArtifact(meta, artifactId);
+export const changeDifficulty = (meta, difficultyId) => setDifficulty(meta, difficultyId);

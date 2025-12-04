@@ -1,15 +1,12 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.initializeUI = void 0;
-const portfolioSystem_js_1 = require("../systems/portfolioSystem.js");
-const watchOrders_js_1 = require("../systems/watchOrders.js");
-const miniChart_js_1 = require("../charts/miniChart.js");
-const ui_helpers_js_1 = require("./ui_helpers.js");
-const ui_portfolio_js_1 = require("./ui_portfolio.js");
-const ui_events_js_1 = require("./ui_events.js");
-const ui_eras_js_1 = require("./ui_eras.js");
-const ui_meta_js_1 = require("./ui_meta.js");
-const initializeUI = (runner, container, options = {}) => {
+import { executeTrade } from "../systems/portfolioSystem.js";
+import { placeLimitBuyWatch, placeLimitSellWatch, placeStopLossWatch, cancelWatchOrder, } from "../systems/watchOrders.js";
+import { drawSparkline, drawPieChart } from "../charts/miniChart.js";
+import { formatCurrency } from "./ui_helpers.js";
+import { refreshHoldingsPanel, populateTickerOptions } from "./ui_portfolio.js";
+import { renderEventList } from "./ui_events.js";
+import { renderEraList } from "./ui_eras.js";
+import { initializeMetaPanel } from "./ui_meta.js";
+export const initializeUI = (runner, container, options = {}) => {
     container.classList.add("game-grid");
     container.innerHTML = `
     <section class="panel meta-panel" data-panel="meta">
@@ -259,7 +256,7 @@ const initializeUI = (runner, container, options = {}) => {
         "stop-loss": "#4FC3F7",
     };
     const metaPanel = metaPanelContainer
-        ? (0, ui_meta_js_1.initializeMetaPanel)({
+        ? initializeMetaPanel({
             container: metaPanelContainer,
             metaState: currentMeta,
         })
@@ -267,7 +264,7 @@ const initializeUI = (runner, container, options = {}) => {
     const renderSummaryGraph = () => {
         if (!summaryChart)
             return;
-        (0, miniChart_js_1.drawSparkline)(summaryChart, summaryHistory.slice(-40));
+        drawSparkline(summaryChart, summaryHistory.slice(-40));
     };
     const getSectorDistribution = () => {
         const buckets = {};
@@ -307,7 +304,7 @@ const initializeUI = (runner, container, options = {}) => {
         if (!summaryDistribution)
             return;
         const { segments } = getSectorDistribution();
-        (0, miniChart_js_1.drawPieChart)(summaryDistribution, segments);
+        drawPieChart(summaryDistribution, segments);
     };
     const renderEraTimeline = () => {
         if (!summaryEraTimeline)
@@ -385,7 +382,7 @@ const initializeUI = (runner, container, options = {}) => {
             value,
             color: WATCH_ORDER_COLORS[type],
         }));
-        (0, miniChart_js_1.drawPieChart)(summaryWatchPie, segments, runner.state.watchOrders.length > 0 ? "Trigger mix" : "No triggers");
+        drawPieChart(summaryWatchPie, segments, runner.state.watchOrders.length > 0 ? "Trigger mix" : "No triggers");
     };
     const refreshSummary = () => {
         const totalDaysLabel = runner.state.totalDays === Number.MAX_SAFE_INTEGER ? "∞" : runner.state.totalDays;
@@ -413,7 +410,7 @@ const initializeUI = (runner, container, options = {}) => {
                 : "Progress unknown";
         }
         if (summaryStripCash) {
-            summaryStripCash.textContent = `Cash ${(0, ui_helpers_js_1.formatCurrency)(runner.state.portfolio.cash)}`;
+            summaryStripCash.textContent = `Cash ${formatCurrency(runner.state.portfolio.cash)}`;
         }
         const holdingsValue = Math.max(0, value - runner.state.portfolio.cash);
         const limit = runner.state.portfolio.marginLimit;
@@ -422,7 +419,7 @@ const initializeUI = (runner, container, options = {}) => {
             summaryStripMargin.textContent = limit > 0 ? `Margin ${marginUsage.toFixed(0)}%` : "Margin n/a";
         }
         if (summaryStripBest) {
-            summaryStripBest.textContent = `Best ${(0, ui_helpers_js_1.formatCurrency)(runner.metaState.bestReturn)}`;
+            summaryStripBest.textContent = `Best ${formatCurrency(runner.metaState.bestReturn)}`;
         }
         if (summaryStripXp) {
             summaryStripXp.textContent = `XP ${runner.metaState.xp}`;
@@ -447,7 +444,7 @@ const initializeUI = (runner, container, options = {}) => {
             chartCanvas.getContext("2d")?.clearRect(0, 0, chartCanvas.width, chartCanvas.height);
             return;
         }
-        (0, miniChart_js_1.drawSparkline)(chartCanvas, company.history.slice(-40));
+        drawSparkline(chartCanvas, company.history.slice(-40));
         if (selectedInfo) {
             selectedInfo.textContent = `${company.name} · ${company.ticker}`;
         }
@@ -455,7 +452,7 @@ const initializeUI = (runner, container, options = {}) => {
         const changePct = previous === 0 ? 0 : (company.price - previous) / previous;
         const changeLabel = changePct >= 0 ? `+${(changePct * 100).toFixed(2)}%` : `${(changePct * 100).toFixed(2)}%`;
         if (selectedPriceEl) {
-            selectedPriceEl.textContent = (0, ui_helpers_js_1.formatCurrency)(company.price);
+            selectedPriceEl.textContent = formatCurrency(company.price);
         }
         if (selectedChangeEl) {
             selectedChangeEl.textContent = changeLabel;
@@ -512,7 +509,7 @@ const initializeUI = (runner, container, options = {}) => {
         const changePct = previous === 0 ? 0 : (company.price - previous) / previous;
         const volatility = calculateVolatility(company.history.slice(-10));
         const entries = [
-            { label: "5-day avg", value: (0, ui_helpers_js_1.formatCurrency)(Number(average.toFixed(2))) },
+            { label: "5-day avg", value: formatCurrency(Number(average.toFixed(2))) },
             { label: "Volatility", value: formatPercent(volatility) },
             { label: "Trend impact", value: formatPercent(company.trendBias + volatility * 0.5) },
             { label: "5-day change", value: formatPercent((company.price - recentHistory[0]) / recentHistory[0] || 0) },
@@ -556,10 +553,10 @@ const initializeUI = (runner, container, options = {}) => {
         }
     };
     const refreshEras = () => {
-        (0, ui_eras_js_1.renderEraList)(eraList, runner.state.eras, runner.state.currentEraIndex);
+        renderEraList(eraList, runner.state.eras, runner.state.currentEraIndex);
     };
     const refreshEvents = () => {
-        (0, ui_events_js_1.renderEventList)(eventList, runner.state.eventsToday);
+        renderEventList(eventList, runner.state.eventsToday);
     };
     const handleHoldingSelect = (ticker) => {
         selectedTicker = ticker;
@@ -570,7 +567,7 @@ const initializeUI = (runner, container, options = {}) => {
         updateTradeSliderLimits();
     };
     const refreshHoldings = () => {
-        (0, ui_portfolio_js_1.refreshHoldingsPanel)(holdingsList, runner.state.portfolio, runner.state.companies, selectedTicker, handleHoldingSelect);
+        refreshHoldingsPanel(holdingsList, runner.state.portfolio, runner.state.companies, selectedTicker, handleHoldingSelect);
     };
     const watchTypeLabels = {
         "limit-buy": "Limit Buy",
@@ -597,7 +594,7 @@ const initializeUI = (runner, container, options = {}) => {
             info.className = "watch-entry__info";
             info.innerHTML = `
         <strong>${company?.ticker ?? "Unknown"}</strong>
-        ${watchTypeLabels[order.type]} @ ${(0, ui_helpers_js_1.formatCurrency)(order.triggerPrice)}
+        ${watchTypeLabels[order.type]} @ ${formatCurrency(order.triggerPrice)}
         <span>${formatWatchTime(order.timeInForce)}</span>
       `;
             info.addEventListener("click", () => {
@@ -609,7 +606,7 @@ const initializeUI = (runner, container, options = {}) => {
             meta.className = "watch-entry__meta";
             const parts = [];
             if (order.maxCashToSpend) {
-                parts.push(`Cash ${(0, ui_helpers_js_1.formatCurrency)(order.maxCashToSpend)}`);
+                parts.push(`Cash ${formatCurrency(order.maxCashToSpend)}`);
             }
             if (order.sharesToSell) {
                 parts.push(`${order.sharesToSell} shares`);
@@ -620,7 +617,7 @@ const initializeUI = (runner, container, options = {}) => {
             cancel.className = "watch-entry__cancel";
             cancel.textContent = "Cancel";
             cancel.addEventListener("click", () => {
-                (0, watchOrders_js_1.cancelWatchOrder)(runner.state, order.id);
+                cancelWatchOrder(runner.state, order.id);
                 refreshAll();
             });
             entry.appendChild(info);
@@ -697,7 +694,7 @@ const initializeUI = (runner, container, options = {}) => {
                 watchFeedback && (watchFeedback.textContent = "Set how much cash to spend.");
                 return;
             }
-            (0, watchOrders_js_1.placeLimitBuyWatch)(runner.state, company.id, triggerPrice, cash, timeInForce);
+            placeLimitBuyWatch(runner.state, company.id, triggerPrice, cash, timeInForce);
         }
         else if (watchTypeSelect.value === "limit-sell") {
             const shares = Number(watchSharesInput?.value ?? "0");
@@ -705,7 +702,7 @@ const initializeUI = (runner, container, options = {}) => {
                 watchFeedback && (watchFeedback.textContent = "Enter shares to sell.");
                 return;
             }
-            (0, watchOrders_js_1.placeLimitSellWatch)(runner.state, company.id, triggerPrice, shares, timeInForce);
+            placeLimitSellWatch(runner.state, company.id, triggerPrice, shares, timeInForce);
         }
         else {
             const shares = Number(watchSharesInput?.value ?? "0");
@@ -713,14 +710,14 @@ const initializeUI = (runner, container, options = {}) => {
                 watchFeedback && (watchFeedback.textContent = "Enter shares for the stop loss.");
                 return;
             }
-            (0, watchOrders_js_1.placeStopLossWatch)(runner.state, company.id, triggerPrice, shares, timeInForce);
+            placeStopLossWatch(runner.state, company.id, triggerPrice, shares, timeInForce);
         }
         closeWatchModal();
         refreshAll();
     };
     const refreshTickers = () => {
         const previousSelection = selectedTicker ?? tradeTicker?.value;
-        (0, ui_portfolio_js_1.populateTickerOptions)(tradeTicker, runner.state.companies);
+        populateTickerOptions(tradeTicker, runner.state.companies);
         const fallback = runner.state.companies[0]?.ticker;
         const newSelection = runner.state.companies.some((company) => company.ticker === previousSelection)
             ? previousSelection
@@ -828,7 +825,7 @@ const initializeUI = (runner, container, options = {}) => {
         }
         const clampNote = quantity !== sliderValue ? " (adjusted to max available)" : "";
         const signedQty = direction === "buy" ? quantity : -quantity;
-        runner.state.portfolio = (0, portfolioSystem_js_1.executeTrade)(runner.state.portfolio, ticker, signedQty, company.price);
+        runner.state.portfolio = executeTrade(runner.state.portfolio, ticker, signedQty, company.price);
         selectedTicker = ticker;
         tradeFeedback &&
             (tradeFeedback.textContent = `${direction === "buy" ? "Bought" : "Sold"} ${quantity} ${ticker} shares${clampNote}.`);
@@ -881,4 +878,3 @@ const initializeUI = (runner, container, options = {}) => {
         },
     };
 };
-exports.initializeUI = initializeUI;

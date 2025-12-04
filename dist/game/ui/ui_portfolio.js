@@ -1,8 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.populateTickerOptions = exports.refreshHoldingsPanel = void 0;
-const ui_helpers_js_1 = require("./ui_helpers.js");
-const refreshHoldingsPanel = (container, portfolio, companies, selectedTicker, onSelect) => {
+import { formatCurrency } from "./ui_helpers.js";
+export const refreshHoldingsPanel = (container, portfolio, companies, selectedTicker, onSelect) => {
     if (!container)
         return;
     container.innerHTML = "";
@@ -23,14 +20,13 @@ const refreshHoldingsPanel = (container, portfolio, companies, selectedTicker, o
         if (ticker === selectedTicker) {
             button.classList.add("selected");
         }
-        button.textContent = `${ticker}: ${quantity} sh · ${(0, ui_helpers_js_1.formatCurrency)(value)}`;
+        button.textContent = `${ticker}: ${quantity} sh · ${formatCurrency(value)}`;
         button.addEventListener("click", () => onSelect?.(ticker));
         item.appendChild(button);
         container.appendChild(item);
     }
 };
-exports.refreshHoldingsPanel = refreshHoldingsPanel;
-const populateTickerOptions = (select, companies) => {
+export const populateTickerOptions = (select, companies) => {
     if (!select)
         return;
     select.innerHTML = "";
@@ -41,4 +37,3 @@ const populateTickerOptions = (select, companies) => {
         select.appendChild(option);
     }
 };
-exports.populateTickerOptions = populateTickerOptions;

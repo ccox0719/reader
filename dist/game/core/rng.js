@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.createSeededRng = void 0;
-const createSeededRng = (seed = Date.now()) => {
+export const createSeededRng = (seed = Date.now()) => {
     let value = seed >>> 0;
     const next = () => {
         value ^= value << 13;
@@ -11,4 +8,3 @@ const createSeededRng = (seed = Date.now()) => {
     };
     return { next };
 };
-exports.createSeededRng = createSeededRng;

@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.sellAtPrice = exports.buyAtPrice = exports.executeTrade = exports.portfolioValue = void 0;
-const portfolioValue = (state) => {
+export const portfolioValue = (state) => {
     const holdingsValue = Object.entries(state.portfolio.holdings).reduce((sum, [ticker, quantity]) => {
         const company = state.companies.find((item) => item.ticker === ticker);
         if (!company)
@@ -10,8 +7,7 @@ const portfolioValue = (state) => {
     }, 0);
     return Number((state.portfolio.cash + holdingsValue).toFixed(2));
 };
-exports.portfolioValue = portfolioValue;
-const executeTrade = (portfolio, ticker, quantity, price) => {
+export const executeTrade = (portfolio, ticker, quantity, price) => {
     const newHoldings = {
         ...portfolio.holdings,
         [ticker]: (portfolio.holdings[ticker] ?? 0) + quantity,
@@ -22,8 +18,7 @@ const executeTrade = (portfolio, ticker, quantity, price) => {
         holdings: newHoldings,
     };
 };
-exports.executeTrade = executeTrade;
-const buyAtPrice = (state, ticker, price, maxCashToSpend) => {
+export const buyAtPrice = (state, ticker, price, maxCashToSpend) => {
     if (price <= 0 || maxCashToSpend <= 0) {
         return 0;
     }
@@ -32,18 +27,16 @@ const buyAtPrice = (state, ticker, price, maxCashToSpend) => {
     if (quantity <= 0) {
         return 0;
     }
-    state.portfolio = (0, exports.executeTrade)(state.portfolio, ticker, quantity, price);
+    state.portfolio = executeTrade(state.portfolio, ticker, quantity, price);
     return quantity;
 };
-exports.buyAtPrice = buyAtPrice;
-const sellAtPrice = (state, ticker, price, sharesToSell) => {
+export const sellAtPrice = (state, ticker, price, sharesToSell) => {
     const held = state.portfolio.holdings[ticker] ?? 0;
     const targetShares = Math.max(0, Math.floor(sharesToSell));
     const quantity = Math.min(held, targetShares);
     if (quantity <= 0) {
         return 0;
     }
-    state.portfolio = (0, exports.executeTrade)(state.portfolio, ticker, -quantity, price);
+    state.portfolio = executeTrade(state.portfolio, ticker, -quantity, price);
     return quantity;
 };
-exports.sellAtPrice = sellAtPrice;

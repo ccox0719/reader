@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.initializeMetaPanel = void 0;
-const initializeMetaPanel = ({ container, metaState, }) => {
+export const initializeMetaPanel = ({ container, metaState, }) => {
     const difficultyEl = container.querySelector("[data-role='meta-difficulty']");
     const artifactGrid = container.querySelector("[data-role='artifact-grid']");
     const renderArtifacts = (state) => {
@@ -26,4 +23,3 @@ const initializeMetaPanel = ({ container, metaState, }) => {
     refresh(metaState);
     return { refresh };
 };
-exports.initializeMetaPanel = initializeMetaPanel;

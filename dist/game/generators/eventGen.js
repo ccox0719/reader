@@ -1,11 +1,5 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateEvent = void 0;
-const eventTemplates_json_1 = __importDefault(require("../content/eventTemplates.json"));
-const templates = eventTemplates_json_1.default;
+import eventTemplates from "../content/eventTemplates.json";
+const templates = eventTemplates;
 const RARITY_WEIGHT = {
     common: 1,
     uncommon: 1.4,
@@ -57,7 +51,7 @@ const sampleImpact = (rng, template) => {
     }
     return 0;
 };
-const generateEvent = (rng, sectors, weightOverrides) => {
+export const generateEvent = (rng, sectors, weightOverrides) => {
     const template = pickTemplate(rng, weightOverrides);
     const needsSector = template.type === "sector" || template.type === "company";
     const sectorAffinity = needsSector
@@ -74,4 +68,3 @@ const generateEvent = (rng, sectors, weightOverrides) => {
         effects: template.effects,
     };
 };
-exports.generateEvent = generateEvent;

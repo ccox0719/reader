@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.updatePrices = void 0;
-const eventSystem_js_1 = require("./eventSystem.js");
+import { calculateEventShock } from "./eventSystem.js";
 const randRange = (rng, min, max) => min + (max - min) * rng.next();
 const randNormal = (rng, mean = 0, deviation = 1) => {
     let u = 0;
@@ -30,7 +27,7 @@ const buildIntradayRange = (rng, open, close, volatility, eraIntraday) => {
         generated: true,
     };
 };
-const updatePrices = (state, events, rng) => {
+export const updatePrices = (state, events, rng) => {
     const era = state.eras[state.currentEraIndex];
     const macro = era?.effects?.global ?? 0;
     const eraVolatility = era?.effects?.volatilityMultiplier ?? 1;
@@ -50,7 +47,7 @@ const updatePrices = (state, events, rng) => {
             volatilityBoost;
         const noise = randNormal(rng, 0, adjustedVolatility);
         const randomFactor = randRange(rng, -company.randomness * eraIntraday, company.randomness * eraIntraday);
-        const eventShock = (0, eventSystem_js_1.calculateEventShock)(company, events, {
+        const eventShock = calculateEventShock(company, events, {
             negativeImpactMultiplier: state.artifactEffects.negativeEventMultiplier,
         });
         const sectorBonus = company.sector === "Energy" ? state.artifactEffects.energyBonus : 0;
@@ -71,4 +68,3 @@ const updatePrices = (state, events, rng) => {
         company.history.push(company.price);
     }
 };
-exports.updatePrices = updatePrices;

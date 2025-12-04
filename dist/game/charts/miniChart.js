@@ -1,6 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.drawPieChart = exports.drawSparkline = void 0;
 const GRID_COLOR = "rgba(255, 255, 255, 0.08)";
 const LINE_COLOR = "#4FC3F7";
 const FILL_COLOR = "rgba(79, 195, 247, 0.1)";
@@ -18,7 +15,7 @@ const prepareCanvas = (canvas) => {
     ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
     return { ctx, width: displayWidth, height: displayHeight };
 };
-const drawSparkline = (canvas, values) => {
+export const drawSparkline = (canvas, values) => {
     const prepared = prepareCanvas(canvas);
     if (!prepared || values.length === 0) {
         return;
@@ -69,8 +66,7 @@ const drawSparkline = (canvas, values) => {
         ctx.fill();
     });
 };
-exports.drawSparkline = drawSparkline;
-const drawPieChart = (canvas, segments, emptyLabel = "No holdings") => {
+export const drawPieChart = (canvas, segments, emptyLabel = "No holdings") => {
     const prepared = prepareCanvas(canvas);
     if (!prepared)
         return;
@@ -107,4 +103,3 @@ const drawPieChart = (canvas, segments, emptyLabel = "No holdings") => {
         startAngle = endAngle;
     }
 };
-exports.drawPieChart = drawPieChart;

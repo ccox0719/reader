@@ -1,13 +1,9 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.clearRun = exports.loadRun = exports.saveRun = void 0;
 const RUN_SAVE_KEY = "rogue-market-run";
-const saveRun = (state) => {
+export const saveRun = (state) => {
     const payload = { state, updatedAt: Date.now() };
     localStorage.setItem(RUN_SAVE_KEY, JSON.stringify(payload));
 };
-exports.saveRun = saveRun;
-const loadRun = () => {
+export const loadRun = () => {
     const raw = localStorage.getItem(RUN_SAVE_KEY);
     if (!raw)
         return null;
@@ -20,8 +16,6 @@ const loadRun = () => {
         return null;
     }
 };
-exports.loadRun = loadRun;
-const clearRun = () => {
+export const clearRun = () => {
     localStorage.removeItem(RUN_SAVE_KEY);
 };
-exports.clearRun = clearRun;

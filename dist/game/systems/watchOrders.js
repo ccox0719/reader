@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.processWatchOrdersForDay = exports.cancelWatchOrder = exports.placeStopLossWatch = exports.placeLimitSellWatch = exports.placeLimitBuyWatch = void 0;
-const portfolioSystem_js_1 = require("./portfolioSystem.js");
+import { buyAtPrice, sellAtPrice } from "./portfolioSystem.js";
 const clamp = (value, min, max) => Math.max(min, Math.min(value, max));
 const getLimitBuyFillPrice = (range, triggerPrice) => {
     const minAllowed = Math.min(range.open, range.low);
@@ -19,7 +16,7 @@ const getStopLossFillPrice = (range, triggerPrice) => {
     }
     return Math.min(triggerPrice, range.open);
 };
-const placeLimitBuyWatch = (state, companyId, triggerPrice, maxCashToSpend, timeInForce = "good-till-run") => {
+export const placeLimitBuyWatch = (state, companyId, triggerPrice, maxCashToSpend, timeInForce = "good-till-run") => {
     const order = {
         id: crypto.randomUUID(),
         companyId,
@@ -32,8 +29,7 @@ const placeLimitBuyWatch = (state, companyId, triggerPrice, maxCashToSpend, time
     state.watchOrders.push(order);
     return order;
 };
-exports.placeLimitBuyWatch = placeLimitBuyWatch;
-const placeLimitSellWatch = (state, companyId, triggerPrice, sharesToSell, timeInForce = "good-till-run") => {
+export const placeLimitSellWatch = (state, companyId, triggerPrice, sharesToSell, timeInForce = "good-till-run") => {
     const order = {
         id: crypto.randomUUID(),
         companyId,
@@ -46,8 +42,7 @@ const placeLimitSellWatch = (state, companyId, triggerPrice, sharesToSell, timeI
     state.watchOrders.push(order);
     return order;
 };
-exports.placeLimitSellWatch = placeLimitSellWatch;
-const placeStopLossWatch = (state, companyId, triggerPrice, sharesToSell, timeInForce = "good-till-run") => {
+export const placeStopLossWatch = (state, companyId, triggerPrice, sharesToSell, timeInForce = "good-till-run") => {
     const order = {
         id: crypto.randomUUID(),
         companyId,
@@ -60,12 +55,10 @@ const placeStopLossWatch = (state, companyId, triggerPrice, sharesToSell, timeIn
     state.watchOrders.push(order);
     return order;
 };
-exports.placeStopLossWatch = placeStopLossWatch;
-const cancelWatchOrder = (state, orderId) => {
+export const cancelWatchOrder = (state, orderId) => {
     state.watchOrders = state.watchOrders.filter((order) => order.id !== orderId);
 };
-exports.cancelWatchOrder = cancelWatchOrder;
-const processWatchOrdersForDay = (state) => {
+export const processWatchOrdersForDay = (state) => {
     const remaining = [];
     for (const order of state.watchOrders) {
         const company = state.companies.find((item) => item.id === order.companyId);
@@ -95,17 +88,16 @@ const processWatchOrdersForDay = (state) => {
                 : getStopLossFillPrice(range, order.triggerPrice);
         if (order.type === "limit-buy") {
             const spend = order.maxCashToSpend ?? state.portfolio.cash;
-            (0, portfolioSystem_js_1.buyAtPrice)(state, company.ticker, fillPrice, spend);
+            buyAtPrice(state, company.ticker, fillPrice, spend);
         }
         else if (order.type === "limit-sell") {
             const shares = order.sharesToSell ?? Math.floor(state.portfolio.holdings[company.ticker] ?? 0);
-            (0, portfolioSystem_js_1.sellAtPrice)(state, company.ticker, fillPrice, shares);
+            sellAtPrice(state, company.ticker, fillPrice, shares);
         }
         else if (order.type === "stop-loss") {
             const shares = order.sharesToSell ?? Math.floor(state.portfolio.holdings[company.ticker] ?? 0);
-            (0, portfolioSystem_js_1.sellAtPrice)(state, company.ticker, fillPrice, shares);
+            sellAtPrice(state, company.ticker, fillPrice, shares);
         }
     }
     state.watchOrders = remaining;
 };
-exports.processWatchOrdersForDay = processWatchOrdersForDay;
