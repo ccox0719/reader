@@ -348,6 +348,11 @@ body {
   justify-content: space-between;
 }
 
+.summary-strip span[data-role="summary-strip-cash"] {
+  justify-content: flex-end;
+  font-weight: 600;
+}
+
 .summary-strip span:not(:first-child)::before {
   content: "•";
   color: var(--text-muted);
@@ -1048,6 +1053,17 @@ li {
     right: 1rem;
     left: auto;
     transform: none;
+  }
+
+  .summary-strip span {
+    flex: 1 1 100%;
+  }
+
+  .summary-strip span[data-role="summary-strip-day"],
+  .summary-strip span[data-role="summary-strip-era"],
+  .summary-strip span[data-role="summary-strip-progress"] {
+    flex-basis: 100%;
+    justify-content: flex-start;
   }
 }
 
