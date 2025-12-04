@@ -41,7 +41,7 @@ body {
   color: var(--text-primary);
   transition: opacity 0.25s ease, transform 0.25s ease;
   align-items: stretch;
-  grid-auto-rows: minmax(90px, auto);
+  grid-auto-rows: minmax(20px, auto);
 }
 
 .panel {
