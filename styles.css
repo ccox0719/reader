@@ -41,7 +41,7 @@ body {
   color: var(--text-primary);
   transition: opacity 0.25s ease, transform 0.25s ease;
   align-items: stretch;
-  grid-auto-rows: minmax(200px, auto);
+  grid-auto-rows: minmax(120px, auto);
 }
 
 .panel {
@@ -56,10 +56,12 @@ body {
 }
 
 .panel.collapsed {
-  padding-block: 0.35rem;
-  padding-inline: 1rem;
+  padding-block: 0.25rem;
+  padding-inline: 0.75rem;
   min-height: 0;
   height: auto;
+  border-radius: 0.75rem;
+  border-width: 1px;
 }
 
 .panel.collapsed .panel-body {
