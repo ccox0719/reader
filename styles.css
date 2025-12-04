@@ -52,6 +52,17 @@ body {
   border: 1px solid var(--outline);
   box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
   overflow: hidden;
+  transition: padding 0.2s ease;
+}
+
+.panel.collapsed {
+  padding-block: 0.55rem;
+  padding-inline: 1rem;
+  min-height: auto;
+}
+
+.panel.collapsed .panel-body {
+  margin-top: 0;
 }
 
 .buy-panel {

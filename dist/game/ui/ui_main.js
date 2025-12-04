@@ -769,12 +769,13 @@ export const initializeUI = (runner, container, options = {}) => {
         const body = section.querySelector(".panel-body");
         if (!body)
             return;
-        const expanded = button.getAttribute("aria-expanded") === "true";
-        body.hidden = expanded;
-        button.setAttribute("aria-expanded", expanded ? "false" : "true");
+        const isExpanded = button.getAttribute("aria-expanded") === "true";
+        body.hidden = isExpanded;
+        button.setAttribute("aria-expanded", isExpanded ? "false" : "true");
+        section.classList.toggle("collapsed", isExpanded);
         const label = button.querySelector("span");
         if (label) {
-            label.textContent = expanded ? "Show" : "Hide";
+            label.textContent = isExpanded ? "Show" : "Hide";
         }
     };
     const panelToggles = Array.from(container.querySelectorAll(".panel-toggle"));
