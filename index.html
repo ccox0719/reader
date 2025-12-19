@@ -4,12 +4,13 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Christmas Cruise Plan</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
   <style>
     :root{
       --bg: #fbf6ea;                 /* solid cream */
       --paper: #fffdf7;              /* paper */
-      --ink: #171717;
+      --ink: #5b564f;
       --muted: #5b564f;
       --rule: rgba(23,23,23,.10);
       --shadow: 0 14px 40px rgba(0,0,0,.10);
@@ -64,13 +65,15 @@
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       padding: 34px 30px 30px;
+      text-align: center;
     }
 
     /* Minimal top bar: only day count + arrows (no big heading) */
     .nav{
       display:flex;
       align-items:center;
-      justify-content:space-between;
+      justify-content:center;
+      flex-direction: column;
       gap: 12px;
       padding-bottom: 18px;
       margin-bottom: 22px;
@@ -82,8 +85,6 @@
       align-items:center;
       justify-content:center;
       gap: 10px;
-      flex: 1 1 auto;
-      min-width: 0;
     }
 
     .day{
@@ -93,6 +94,25 @@
       text-transform: uppercase;
       color: var(--muted);
       white-space: nowrap;
+    }
+
+    .theme{
+      font-family: var(--sans);
+      font-size: 16px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--ink);
+      margin-top: 6px;
+    }
+
+    .themeIcon{
+      display: block;
+      margin: 0 auto 6px;
+      font-size: 18px;
+    }
+
+    .themeText{
+      display: block;
     }
 
     .dot{
@@ -108,12 +128,6 @@
       display:flex;
       gap: 10px;
       flex: 0 0 auto;
-    }
-
-    .spacer{
-      width: 92px; /* balances arrow group width so center stays centered */
-      flex: 0 0 auto;
-      visibility: hidden;
     }
 
     button{
@@ -176,7 +190,8 @@
     .quote{
       font-style: italic;
       color: rgba(23,23,23,.92);
-      margin: 0;
+      margin: 0 auto;
+      padding: 0;
     }
 
     .suggested{
@@ -184,6 +199,10 @@
       font-size: 13px;
       color: rgba(91,86,79,.90);
       margin-top: 12px;
+    }
+
+    .scripture .content{
+      text-align: center;
     }
 
     .footerHint{
@@ -199,7 +218,6 @@
     @media (max-width: 420px){
       :root{ --font: 17px; }
       .paper{ padding: 26px 20px 22px; }
-      .spacer{ width: 84px; }
     }
 
     @media print{
@@ -207,7 +225,6 @@
       .wrap{ max-width: 100%; padding: 0; }
       .paper{ box-shadow:none; border:none; border-radius:0; }
       .buttons{ display:none; }
-      .spacer{ display:none; }
     }
   </style>
 </head>
@@ -216,13 +233,11 @@
   <div class="wrap">
     <div class="paper" role="region" aria-label="E-reader content">
       <div class="nav">
-        <!-- spacer so day label stays centered -->
-        <div class="spacer" aria-hidden="true">.</div>
-
         <div class="navCenter">
           <div class="day" id="dayIndexLabel">Day</div>
           <span class="dot" aria-hidden="true"></span>
         </div>
+        <div class="theme" id="themeTitle"></div>
 
         <div class="buttons">
           <button id="prevBtn" aria-label="Previous day">←</button>
@@ -231,29 +246,29 @@
       </div>
 
       <div class="section">
-        <div class="label">Truth</div>
+      <div class="label" aria-label="Truth"><i class="bi bi-lightbulb" aria-hidden="true"></i></div>
         <p class="content" id="truth"></p>
       </div>
 
-      <div class="section">
-        <div class="label">Scripture</div>
+      <div class="section scripture">
+        <div class="label" aria-label="Scripture"><i class="bi bi-book" aria-hidden="true"></i></div>
         <div class="ref content" id="scriptureRef"></div>
         <p class="content quote" id="scriptureText"></p>
         <div class="suggested content" id="suggestedReading"></div>
       </div>
 
       <div class="section">
-        <div class="label">Question</div>
+      <div class="label" aria-label="Question"><i class="bi bi-question-circle" aria-hidden="true"></i></div>
         <p class="content" id="question"></p>
       </div>
 
       <div class="section">
-        <div class="label">Practice</div>
+      <div class="label" aria-label="Practice"><i class="bi bi-check2-circle" aria-hidden="true"></i></div>
         <p class="content" id="practice"></p>
       </div>
 
       <div class="section">
-        <div class="label">Blessing</div>
+      <div class="label" aria-label="Blessing"><i class="bi bi-heart" aria-hidden="true"></i></div>
         <p class="content" id="blessing"></p>
       </div>
 
@@ -313,7 +328,7 @@
         scriptureRef: "John 1:5",
         suggestedReading: "Suggested reading for context: John 1:1–9",
         scriptureText: "“The light shines in the darkness, and the darkness has not overcome it.”",
-        question: "What does ‘light’ actually change when things are hard?",
+        question: "What does 'light' actually change when things are hard to see?",
         practice: "Sit quietly together for one minute. No talking. Then read Luke 2:1–7. Let the stillness do the work.",
         blessing: "If you see a family struggling, offer a small assist: hold a door, pick something up, or offer a calm “You’re doing great.”"
       },
@@ -349,8 +364,20 @@
       }
     ];
 
+    const themes = [
+      { text: "Grace", icon: "bi-heart" },
+      { text: "Remember", icon: "bi-bookmark" },
+      { text: "Undeserving", icon: "bi-gift" },
+      { text: "Grace", icon: "bi-stars" },
+      { text: "Light", icon: "bi-brightness-high" },
+      { text: "With Us", icon: "bi-people" },
+      { text: "Continues", icon: "bi-arrow-repeat" },
+      { text: "Forever with Us", icon: "bi-infinity" }
+    ];
+
     const els = {
       dayIndexLabel: document.getElementById('dayIndexLabel'),
+      themeTitle: document.getElementById('themeTitle'),
       truth: document.getElementById('truth'),
       scriptureRef: document.getElementById('scriptureRef'),
       scriptureText: document.getElementById('scriptureText'),
@@ -371,6 +398,12 @@
       const d = days[index];
 
       els.dayIndexLabel.textContent = `Day ${index + 1} of ${days.length}`;
+      const theme = themes[index];
+      if(theme){
+        els.themeTitle.innerHTML = `<i class="bi ${theme.icon} themeIcon" aria-hidden="true"></i><span class="themeText">${theme.text}</span>`;
+      }else{
+        els.themeTitle.textContent = "";
+      }
 
       els.truth.textContent = d.truth;
       els.scriptureRef.textContent = `Scripture: ${d.scriptureRef}`;
@@ -417,3 +450,4 @@
   </script>
 </body>
 </html>
+
