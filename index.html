@@ -1,16 +1,419 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Rogue Market</title>
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
-    <div id="app">
-      <h1>Rogue Market</h1>
-      <p>Bootstrapping the market simulation…</p>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Christmas Cruise Plan</title>
+
+  <style>
+    :root{
+      --bg: #fbf6ea;                 /* solid cream */
+      --paper: #fffdf7;              /* paper */
+      --ink: #171717;
+      --muted: #5b564f;
+      --rule: rgba(23,23,23,.10);
+      --shadow: 0 14px 40px rgba(0,0,0,.10);
+      --radius: 20px;
+
+      --accent: #a4342a;             /* single accent */
+
+      --serif: ui-serif, "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+      --max: 780px;
+      --font: 18px;
+      --leading: 1.85;
+    }
+
+    *{ box-sizing:border-box; }
+
+    body{
+      margin:0;
+      background: var(--bg);
+      color:var(--ink);
+      font-family: var(--serif);
+      font-size: var(--font);
+      line-height: var(--leading);
+      letter-spacing: .01em;
+      text-align: center;
+    }
+
+    /* faint vignette */
+    body::before{
+      content:"";
+      position: fixed;
+      inset: 0;
+      pointer-events:none;
+      background:
+        radial-gradient(1200px 700px at 50% 10%, rgba(164,52,42,.05), transparent 55%),
+        radial-gradient(1400px 900px at 50% 50%, transparent 60%, rgba(0,0,0,.08));
+      opacity: .55;
+    }
+
+    .wrap{
+      position: relative;
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 28px 18px 56px;
+    }
+
+    .paper{
+      background: var(--paper);
+      border: 1px solid rgba(23,23,23,.10);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 34px 30px 30px;
+    }
+
+    /* Minimal top bar: only day count + arrows (no big heading) */
+    .nav{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      padding-bottom: 18px;
+      margin-bottom: 22px;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .navCenter{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap: 10px;
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .day{
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .dot{
+      width: 6px;
+      height: 6px;
+      border-radius: 99px;
+      background: var(--accent);
+      box-shadow: 0 0 0 4px rgba(164,52,42,.10);
+      flex: 0 0 auto;
+    }
+
+    .buttons{
+      display:flex;
+      gap: 10px;
+      flex: 0 0 auto;
+    }
+
+    .spacer{
+      width: 92px; /* balances arrow group width so center stays centered */
+      flex: 0 0 auto;
+      visibility: hidden;
+    }
+
+    button{
+      appearance:none;
+      border: 1px solid rgba(23,23,23,.12);
+      background: rgba(255,255,255,.55);
+      color: var(--ink);
+      padding: 10px 14px;
+      border-radius: 999px;
+      cursor:pointer;
+      font-family: var(--sans);
+      font-size: 14px;
+      line-height: 1;
+    }
+
+    button:active{ transform: scale(.98); }
+    button[disabled]{ opacity:.35; cursor:not-allowed; }
+
+    .section{
+      padding: 22px 0;
+      border-top: 1px solid var(--rule);
+    }
+    .section:first-of-type{
+      border-top:none;
+      padding-top: 6px;
+    }
+
+    .label{
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 0 0 12px;
+      display: inline-block;
+    }
+
+    .label::after{
+      content:"";
+      display:block;
+      height: 2px;
+      width: 42px;
+      margin: 12px auto 0;
+      background: rgba(164,52,42,.22);
+      border-radius: 2px;
+    }
+
+    .content{
+      max-width: 62ch;
+      margin: 0 auto;
+    }
+
+    .ref{
+      font-family: var(--sans);
+      font-size: 14px;
+      color: rgba(91,86,79,.95);
+      margin-bottom: 10px;
+    }
+
+    .quote{
+      font-style: italic;
+      color: rgba(23,23,23,.92);
+      margin: 0;
+    }
+
+    .suggested{
+      font-family: var(--sans);
+      font-size: 13px;
+      color: rgba(91,86,79,.90);
+      margin-top: 12px;
+    }
+
+    .footerHint{
+      margin-top: 26px;
+      padding-top: 18px;
+      border-top: 1px solid var(--rule);
+      color: rgba(91,86,79,.85);
+      font-family: var(--sans);
+      font-size: 12px;
+      text-align:center;
+    }
+
+    @media (max-width: 420px){
+      :root{ --font: 17px; }
+      .paper{ padding: 26px 20px 22px; }
+      .spacer{ width: 84px; }
+    }
+
+    @media print{
+      body::before{ display:none; }
+      .wrap{ max-width: 100%; padding: 0; }
+      .paper{ box-shadow:none; border:none; border-radius:0; }
+      .buttons{ display:none; }
+      .spacer{ display:none; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="paper" role="region" aria-label="E-reader content">
+      <div class="nav">
+        <!-- spacer so day label stays centered -->
+        <div class="spacer" aria-hidden="true">.</div>
+
+        <div class="navCenter">
+          <div class="day" id="dayIndexLabel">Day</div>
+          <span class="dot" aria-hidden="true"></span>
+        </div>
+
+        <div class="buttons">
+          <button id="prevBtn" aria-label="Previous day">←</button>
+          <button id="nextBtn" aria-label="Next day">→</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="label">Truth</div>
+        <p class="content" id="truth"></p>
+      </div>
+
+      <div class="section">
+        <div class="label">Scripture</div>
+        <div class="ref content" id="scriptureRef"></div>
+        <p class="content quote" id="scriptureText"></p>
+        <div class="suggested content" id="suggestedReading"></div>
+      </div>
+
+      <div class="section">
+        <div class="label">Question</div>
+        <p class="content" id="question"></p>
+      </div>
+
+      <div class="section">
+        <div class="label">Practice</div>
+        <p class="content" id="practice"></p>
+      </div>
+
+      <div class="section">
+        <div class="label">Blessing</div>
+        <p class="content" id="blessing"></p>
+      </div>
+
+      <div class="footerHint">Quiet, simple, intentional.</div>
     </div>
-    <script type="module" src="main.js"></script>
-  </body>
+  </div>
+
+  <script>
+    // Using your original titles/content, plus:
+    // - Suggested reading moved UNDER the verse (for context)
+    // - Added a "Blessing" action each day (ship/drive)
+
+    const days = [
+      {
+        title: "🧳 Dec 20 — Setting the Frame",
+        truth: "This week isn’t an escape. It’s a reminder.",
+        scriptureRef: "John 1:14",
+        suggestedReading: "Suggested reading for context: John 1:1–18",
+        scriptureText: "“The Word became flesh and dwelt among us.”",
+        question: "Why do you think God chose to come as a person instead of fixing everything from far away?",
+        practice: "Everyone says one hope for the week that isn’t about entertainment.",
+        blessing: "Notice someone who looks overwhelmed (staff, parent, traveler). Offer a simple kindness: hold a door, help with something dropped, or say a sincere “Thank you.”"
+      },
+      {
+        title: "🌊 Day 1 (Dec 21) — God Chose Nearness",
+        truth: "Christmas is God refusing to stay distant.",
+        scriptureRef: "Hebrews 4:15 (paraphrase for 7yo)",
+        suggestedReading: "Suggested reading for context: Hebrews 4:14–16",
+        scriptureText: "Jesus understands our weaknesses. He knows what it feels like to be tempted and tired, yet He did not sin.",
+        question: "Why does it matter that God knows what it feels like to be tired, hungry, or misunderstood?",
+        practice: "Notice moments of closeness today. Sit together longer than usual. No phones for that moment.",
+        blessing: "Learn a crew member’s name (server/cabin steward). Use it. Smile, say thank you, and leave your space cleaner than you found it."
+      },
+      {
+        title: "🌍 Day 2 (Dec 22) — The World Needed Saving",
+        truth: "Christmas happened because something was broken.",
+        scriptureRef: "Romans 3:23",
+        suggestedReading: "Suggested reading for context: Romans 3:21–26",
+        scriptureText: "“All have sinned and fall short of the glory of God.”",
+        question: "What do you think people are most broken about today? Be honest.",
+        practice: "Talk about one real struggle people your age face and pray briefly about it.",
+        blessing: "Let someone go first today (line/elevator/buffet). Make space without comments. Quiet humility is loud kindness."
+      },
+      {
+        title: "🤍 Day 3 (Dec 23) — Jesus Didn’t Come for Perfect People",
+        truth: "Grace starts where we fail.",
+        scriptureRef: "Luke 2:10–11",
+        suggestedReading: "Suggested reading for context: Luke 2:8–20",
+        scriptureText: "“I bring you good news of great joy… For unto you is born… a Savior, who is Christ the Lord.”",
+        question: "Why do you think God chose a stable instead of a palace?",
+        practice: "Give grace today instead of pointing out a mistake. Call it out when you notice it.",
+        blessing: "Be the easy family to be around: lower voices in hallways, be patient with delays, and apologize quickly if you bump or interrupt someone."
+      },
+      {
+        title: "🕯️ Day 4 (Dec 24) — Light in the Dark",
+        truth: "Jesus didn’t remove darkness. He entered it.",
+        scriptureRef: "John 1:5",
+        suggestedReading: "Suggested reading for context: John 1:1–9",
+        scriptureText: "“The light shines in the darkness, and the darkness has not overcome it.”",
+        question: "What does ‘light’ actually change when things are hard?",
+        practice: "Sit quietly together for one minute. No talking. Then read Luke 2:1–7. Let the stillness do the work.",
+        blessing: "If you see a family struggling, offer a small assist: hold a door, pick something up, or offer a calm “You’re doing great.”"
+      },
+      {
+        title: "🎄 Day 5 (Dec 25) — God With Us",
+        truth: "Christmas means God is not far off, even now.",
+        scriptureRef: "Matthew 1:23",
+        suggestedReading: "Suggested reading for context: Matthew 1:18–25",
+        scriptureText: "“They shall call his name Immanuel” (which means, God with us).",
+        question: "If God is really with us, how should that change how we live?",
+        practice: "Each person says one thing they’re grateful for that isn’t a gift. Take a family photo somewhere meaningful. Not posed. Real.",
+        blessing: "Write a short thank-you note for a crew member (or your server). If possible, pair it with an encouraging compliment to a supervisor."
+      },
+      {
+        title: "🌱 Day 6 (Dec 26) — Christmas Continues",
+        truth: "Christmas doesn’t end when the day does.",
+        scriptureRef: "Colossians 1:27",
+        suggestedReading: "Suggested reading for context: Colossians 1:24–29",
+        scriptureText: "“Christ in you, the hope of glory.”",
+        question: "What part of this week do you want to carry into the rest of the year?",
+        practice: "Each person names one small way they want to live differently.",
+        blessing: "Choose one ‘invisible job’ to do without being asked: tidy a shared space, return dishes, help your sibling, or forgive first."
+      },
+      {
+        title: "🏠 Dec 27 — Returning Changed",
+        truth: "We don’t leave Christ behind when we go home.",
+        scriptureRef: "Matthew 28:20",
+        suggestedReading: "Suggested reading for context: Matthew 28:16–20",
+        scriptureText: "“I am with you always, to the end of the age.”",
+        question: "What’s one truth from this week that surprised you?",
+        practice: "Travel day: High / Low / God-moment round in the car.",
+        blessing: "On the drive home: speak kindness on purpose. Encourage one person by name with one specific thing you appreciated about them this week."
+      }
+    ];
+
+    const els = {
+      dayIndexLabel: document.getElementById('dayIndexLabel'),
+      truth: document.getElementById('truth'),
+      scriptureRef: document.getElementById('scriptureRef'),
+      scriptureText: document.getElementById('scriptureText'),
+      suggestedReading: document.getElementById('suggestedReading'),
+      question: document.getElementById('question'),
+      practice: document.getElementById('practice'),
+      blessing: document.getElementById('blessing'),
+      prevBtn: document.getElementById('prevBtn'),
+      nextBtn: document.getElementById('nextBtn')
+    };
+
+    const KEY = "christmasCruiseReaderIndex";
+    let index = 0;
+
+    function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
+
+    function render(){
+      const d = days[index];
+
+      els.dayIndexLabel.textContent = `Day ${index + 1} of ${days.length}`;
+
+      els.truth.textContent = d.truth;
+      els.scriptureRef.textContent = `Scripture: ${d.scriptureRef}`;
+      els.scriptureText.textContent = d.scriptureText || "";
+      els.suggestedReading.textContent = d.suggestedReading || "";
+
+      els.question.textContent = d.question;
+      els.practice.textContent = d.practice || "";
+      els.blessing.textContent = d.blessing || "";
+
+      els.prevBtn.disabled = index === 0;
+      els.nextBtn.disabled = index === days.length - 1;
+
+      try { localStorage.setItem(KEY, String(index)); } catch(e) {}
+    }
+
+    function load(){
+      try {
+        const saved = localStorage.getItem(KEY);
+        if(saved !== null){
+          const idx = parseInt(saved, 10);
+          if(!Number.isNaN(idx)) index = clamp(idx, 0, days.length - 1);
+        }
+      } catch(e) {}
+    }
+
+    els.prevBtn.addEventListener('click', () => {
+      index = clamp(index - 1, 0, days.length - 1);
+      render();
+    });
+
+    els.nextBtn.addEventListener('click', () => {
+      index = clamp(index + 1, 0, days.length - 1);
+      render();
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if(e.key === "ArrowLeft") els.prevBtn.click();
+      if(e.key === "ArrowRight") els.nextBtn.click();
+    });
+
+    load();
+    render();
+  </script>
+</body>
 </html>
